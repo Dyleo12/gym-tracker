@@ -25,7 +25,6 @@ export default function WorkoutPage() {
   const [customExercises, setCustomExercises] = useState([]);
   const [selectedExercise, setSelectedExercise] = useState("");
   const [newCustomExercise, setNewCustomExercise] = useState("");
-  const [user, setUser] = useState(null);
   const router = useRouter();
 
   const authUser = useAuth(15000);
@@ -46,13 +45,16 @@ export default function WorkoutPage() {
   };
 
   const addCustomExercise = async () => {
-    if (!user) return;
+    if (!authUser){
+       console.log("no user found");
+      return;
+    }
     const trimmed = newCustomExercise.trim();
     if (!trimmed || customExercises.includes(trimmed)) return;
 
     const { data, error } = await supabase
       .from("custom_exercises")
-      .insert([{ name: trimmed, user_id: user.id }])
+      .insert([{ name: trimmed, user_id: authUser.id }])
       .select();
 
     if (error) console.error(error);
@@ -64,12 +66,12 @@ export default function WorkoutPage() {
   };
 
   const removeCustomExercise = async (name) => {
-    if (!user) return;
+    if (!authUser) return;
     const { error } = await supabase
       .from("custom_exercises")
       .delete()
       .eq("name", name)
-      .eq("user_id", user.id);
+      .eq("user_id", authUser.id);
 
     if (error) console.error(error);
     else setCustomExercises(customExercises.filter((ex) => ex !== name));
@@ -92,29 +94,20 @@ export default function WorkoutPage() {
   };
 
   const saveWorkout = async () => {
-    if (exercises.length === 0) {
-      alert("Add at least one exercise before saving!");
-      return;
-    }
+  if (!authUser) return alert("You must be logged in to save a workout!");
 
-    const {
-      data: { session },
-      error: sessionError
-    } = await supabase.auth.getSession();
+  if (exercises.length === 0) {
+    alert("Add at least one exercise before saving!");
+    return;
+  }
 
-    if (sessionError || !session) {
-      return;
-    }
+  const workoutData = {
+    date: new Date().toISOString().split("T")[0],
+    exercises,
+    user_id: authUser.id
+  };
 
-    const userId = session.user.id;
-
-    const workoutData = {
-      date: new Date().toISOString().split("T")[0],
-      exercises,
-      user_id: userId
-    };
-
-    const { data, error } = await supabase.from("workouts").insert([workoutData]);
+  const { error } = await supabase.from("workouts").insert([workoutData]);
 
     if (error) {
       console.error(error);
@@ -177,7 +170,6 @@ export default function WorkoutPage() {
       {/* Custom Exercises as badges */}
       {customExercises.length > 0 && (
         <div className="mb-3">
-          <h6 className="mb-1">Custom Exercises:</h6>
           <div className="d-flex flex-wrap gap-1">
             {customExercises.map((ex, i) => (
               <span key={i} className="badge bg-secondary d-flex align-items-center">
@@ -212,7 +204,6 @@ export default function WorkoutPage() {
       <button
         className="btn btn-success btn-m mb-3"
         style={{
-          position: "fixed",
           bottom: "30px",
           zIndex: 1000
         }}
