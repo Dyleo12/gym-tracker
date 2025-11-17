@@ -32,6 +32,21 @@ export default function WorkoutHistory() {
     else fetchHistory();
   };
 
+  const downloadHistory = () => {
+    if (!history.length) return;
+
+    const dataStr = JSON.stringify(history, null, 2); // pretty print
+    const blob = new Blob([dataStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "workout_history.json";
+    a.click();
+
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="container my-4">
       <h2 className="underline-animate header-glow mb-3">Workout History</h2>
@@ -39,9 +54,10 @@ export default function WorkoutHistory() {
         <a href="/" className="btn btn-primary me-2">
           Home
         </a>
+        <button onClick={downloadHistory} className="btn btn-success">
+          📥 Download History
+        </button>
       </div>
-      {history.length === 0 && <p>No workouts saved yet.</p>}
-
       {history
         .sort((a, b) => new Date(b.date) - new Date(a.date))
         .map((workout) => (

@@ -32,6 +32,7 @@ export default function ProgressPage() {
     const { data: workouts } = await supabase
       .from("workouts")
       .select("*")
+      .eq("user_id", authUser.id)
       .order("date", { ascending: true });
 
     const exerciseData = workouts.map((w) => {

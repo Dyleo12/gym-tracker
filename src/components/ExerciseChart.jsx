@@ -5,23 +5,23 @@ import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContai
 
 export default function ExerciseChart({ exercise, data }) {
     const chartData = data.map((d) => {
-        const totalVolume = d.sets.reduce((sum, s) => sum + s.weight * s.reps, 0);
-        const setsCount = d.sets.length;
-        const highestWeight = d.sets.reduce((max, s) => Math.max(max, s.weight), 0);
-        const avgWeight = setsCount > 0 ? d.sets.reduce((sum, s) => sum + s.weight, 0) / setsCount : 0;
+  const sets = d.sets || [];
+  const totalVolume = sets.reduce((sum, s) => sum + Number(s.weight) * Number(s.reps), 0);
+  const setsCount = sets.length;
+  const highestWeight = sets.reduce((max, s) => Math.max(max, Number(s.weight)), 0);
+  const avgWeight = setsCount > 0 ? sets.reduce((sum, s) => sum + Number(s.weight), 0) / setsCount : 0;
 
-        return {
-            date: d.date,
-            highestWeight,
-            avgWeight,
-            setsCount,
-            totalVolume
-        };
-    });
+  return {
+    date: d.date,
+    totalVolume,
+    highestWeight,
+    avgWeight,
+  };
+});
 
     const totalVolumeAll = chartData.reduce((sum, d) => sum + d.totalVolume, 0);
-    const maxVolume = Math.max(...chartData.map(d => d.totalVolume));
-    const maxWeightEver = Math.max(...chartData.map(d => d.highestWeight));
+    const maxVolume = Math.max(...chartData.map(d => d.totalVolume), 0);
+    const maxWeightEver = Math.max(...chartData.map(d => d.highestWeight), 0);
     const avgWeightOverall = chartData.length > 0 ? chartData.reduce((sum, d) => sum + d.avgWeight, 0) / chartData.length : 0;
 
     return (
