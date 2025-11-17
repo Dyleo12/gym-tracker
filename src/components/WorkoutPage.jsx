@@ -6,6 +6,7 @@ import ExerciseRow from "./ExerciseRow";
 import { supabase } from "@/lib/supabaseClient";
 import { useRouter } from "next/navigation";
 import "../app/globals.css"
+import { useAuth } from "@/lib/useAuth";
 
 const PRESET_EXERCISES = [
   "Bench Press",
@@ -27,18 +28,11 @@ export default function WorkoutPage() {
   const [user, setUser] = useState(null);
   const router = useRouter();
 
+  const authUser = useAuth(15000);
+
   useEffect(() => {
-    const getSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        window.location.href = "/auth"; 
-      } else {
-        setUser(session.user);
-        fetchCustomExercises(session.user.id);
-      }
-    };
-    getSession();
-  }, []);
+    if (authUser) fetchCustomExercises(authUser.id);
+  }, [authUser]);
 
   const fetchCustomExercises = async (userId) => {
     const { data, error } = await supabase
@@ -52,7 +46,7 @@ export default function WorkoutPage() {
   };
 
   const addCustomExercise = async () => {
-    if (!user) return; 
+    if (!user) return;
     const trimmed = newCustomExercise.trim();
     if (!trimmed || customExercises.includes(trimmed)) return;
 
@@ -109,7 +103,6 @@ export default function WorkoutPage() {
     } = await supabase.auth.getSession();
 
     if (sessionError || !session) {
-      alert("You must be logged in to save a workout");
       return;
     }
 
@@ -128,7 +121,7 @@ export default function WorkoutPage() {
       alert("Failed to save workout");
     } else {
       alert("Workout saved!");
-      setExercises([]); 
+      setExercises([]);
     }
   };
 
@@ -220,8 +213,8 @@ export default function WorkoutPage() {
         className="btn btn-success btn-m mb-3"
         style={{
           position: "fixed",
-          bottom: "30px",  
-          zIndex: 1000     
+          bottom: "30px",
+          zIndex: 1000
         }}
         onClick={saveWorkout}
       >

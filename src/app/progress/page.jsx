@@ -2,16 +2,20 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient";
-import { Container, Button, Card, Collapse, Form } from "react-bootstrap";
+import { Container, Button } from "react-bootstrap";
 import ExerciseChart from "@/components/ExerciseChart";
 import { useRouter } from "next/navigation";
 import "../globals.css"
+import { useAuth } from "@/lib/useAuth";
 
 export default function ProgressPage() {
   const [exerciseCharts, setExerciseCharts] = useState([]);
   const [selectedExercise, setSelectedExercise] = useState("");
   const [exerciseOptions, setExerciseOptions] = useState([]);
   const router = useRouter();
+
+  const authUser = useAuth(15000);
+
   useEffect(() => {
     const presets = ["Bench Press", "Squat", "Deadlift", "Overhead Press", "Barbell Row", "Pull-Up", "Dip", "Bicep Curl", "Tricep Extension"];
     const fetchCustomExercises = async () => {
@@ -50,7 +54,7 @@ export default function ProgressPage() {
         <a href="/" className="btn btn-primary me-2">
           Home
         </a>
-        </div>
+      </div>
 
       <div className="input-group mb-3">
         <select className="form-select custom-select" value={selectedExercise} onChange={(e) => setSelectedExercise(e.target.value)}>

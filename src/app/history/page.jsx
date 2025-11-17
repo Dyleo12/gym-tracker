@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useRouter } from "next/navigation";
 import "../globals.css"
+import { useAuth } from "@/lib/useAuth";
 
 export default function WorkoutHistory() {
   const [history, setHistory] = useState([]);
@@ -17,6 +18,7 @@ export default function WorkoutHistory() {
     if (error) console.error(error);
     else setHistory(data);
   };
+  const authUser = useAuth(15000);
 
   useEffect(() => {
     fetchHistory();

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import "./globals.css"
+import { useAuth } from "@/lib/useAuth";
 
 const backgroundImages = [
   "/images/bg1.jpg",
@@ -15,11 +16,12 @@ const backgroundImages = [
 export default function HomePage() {
   const router = useRouter();
   const [currentIndex, setCurrentIndex] = useState(0);
+  const authUser = useAuth(15000);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % backgroundImages.length);
-    }, 10000); 
+    }, 10000);
     return () => clearInterval(interval);
   }, []);
 
@@ -28,7 +30,7 @@ export default function HomePage() {
   const handleSignOut = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) alert(error.message);
-    else router.push("/auth"); 
+    else router.push("/auth");
   };
 
   return (

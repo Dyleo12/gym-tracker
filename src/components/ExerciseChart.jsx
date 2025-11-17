@@ -15,7 +15,7 @@ export default function ExerciseChart({ exercise, data }) {
             highestWeight,
             avgWeight,
             setsCount,
-            totalVolume 
+            totalVolume
         };
     });
 
@@ -35,7 +35,7 @@ export default function ExerciseChart({ exercise, data }) {
                     <p>Average Weight per Set: {avgWeightOverall.toFixed(1)} kg</p>
                 </div>
 
-                {}
+                { }
                 <div style={{ height: 300 }}>
                     <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={chartData}>
@@ -43,7 +43,7 @@ export default function ExerciseChart({ exercise, data }) {
                             <XAxis dataKey="date" />
                             <YAxis />
                             <Tooltip />
-                            {}
+                            { }
                             <Line type="monotone" dataKey="highestWeight" stroke="#82ca9d" name="Max Weight" />
                             <Line type="monotone" dataKey="avgWeight" stroke="#ffc658" name="Avg Weight" />
                             <Line type="monotone" dataKey="setsCount" stroke="#ff7300" name="Sets" />
